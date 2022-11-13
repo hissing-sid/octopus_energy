@@ -37,11 +37,7 @@ while (import_start_date <= end_date):
                 value = result['consumption']
         
                 message = 'octopus.%s.consumption %s %d\n' % (fuel, value, epoch)
-
-                sock = socket.socket()
-                sock.connect((carbon_server, carbon_port))
                 sock.sendto(message.encode('utf-8'), (carbon_server, carbon_port))
-
             
                 last_successful_date = import_start_date.strftime("%Y-%m-%d")
         else:
