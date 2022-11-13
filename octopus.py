@@ -18,9 +18,6 @@ end_date = datetime.datetime.now()
 delta = datetime.timedelta(days=1)
 last_successful_date = 'never'
 
-api_url = config['octopus']['api_key'] + '/gas-meter-points/' + mpan + '/meters/' + serial_no + '/consumption/'
-
-
 while (import_start_date <= end_date):
     # Import the data for a single day
     params = {'order_by': 'period', 'period_from': import_start_date.strftime("%Y-%m-%dT%H:%M:00Z"), 'period_to': import_start_date.strftime("%Y-%m-%dT23:59:00Z") }
