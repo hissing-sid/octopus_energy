@@ -1,14 +1,11 @@
-# import datetime module
 import datetime, configparser, json, requests, socket, time
 from dateutil import parser
 
-config_file = 'octopus.ini'
+config_file = 'config.ini'
 config = configparser.ConfigParser()
 config.read(config_file)
 
-api_key = config['octopus']['api_key']
-mpan=config['electricity']['mpan']
-serial_no=config['electricity']['serial_no']
+api_key = config['api']['api_key']
 
 carbon_server = config['carbon']['server']
 carbon_port = int(config['carbon']['port'])
@@ -18,12 +15,17 @@ end_date = datetime.datetime.now()
 delta = datetime.timedelta(days=1)
 last_successful_date = 'never'
 
+# Open the connection to the carbon server
+sock = socket.socket()
+sock.connect((carbon_server, carbon_port))
+
 while (import_start_date <= end_date):
     # Import the data for a single day
     params = {'order_by': 'period', 'period_from': import_start_date.strftime("%Y-%m-%dT%H:%M:00Z"), 'period_to': import_start_date.strftime("%Y-%m-%dT23:59:00Z") }
-       
+   
+    
     for fuel in {'gas','electricity'}:
-        api_url = config['octopus']['api_url'] + '/%s-meter-points/%s/meters/%s/consumption' % (fuel, config[fuel]['meter'],config[fuel]['serial_no'] )
+        api_url = config['api']['api_url'] + '/%s-meter-points/%s/meters/%s/consumption' % (fuel, config[fuel]['meter'],config[fuel]['serial_no'] )
 
         response = requests.get(api_url, params = params, auth = (api_key,''))
         response_results = response.json()
@@ -31,7 +33,7 @@ while (import_start_date <= end_date):
         if response_results['count'] != 0:
             print('Uploading %s data for: %s' %  (fuel, import_start_date.strftime("%Y-%m-%d")) )
             for result in response_results['results']:
-                epoch = datetime.datetime.timestamp(parser.parse(result['interval_start'])) 
+                epoch= datetime.datetime.timestamp(parser.parse(result['interval_start'])) 
                 value = result['consumption']
         
                 message = 'octopus.%s.consumption %s %d\n' % (fuel, value, epoch)
@@ -39,7 +41,7 @@ while (import_start_date <= end_date):
                 sock = socket.socket()
                 sock.connect((carbon_server, carbon_port))
                 sock.sendto(message.encode('utf-8'), (carbon_server, carbon_port))
-                sock.close()
+
             
                 last_successful_date = import_start_date.strftime("%Y-%m-%d")
         else:
@@ -47,6 +49,8 @@ while (import_start_date <= end_date):
 
     import_start_date += delta
 
+# Close the connection to the carbon server
+sock.close()
 print('Imported data to: %s' % last_successful_date)
 
 # Write out last successful import to config file, to ensure we can incrementally load  next run.
