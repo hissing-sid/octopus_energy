@@ -10,7 +10,6 @@ api_key = config['api']['api_key']
 carbon_server = config['carbon']['server']
 carbon_port = int(config['carbon']['port'])
 
-# import_start_date = datetime.datetime.strptime(config['last_import']['date'], "%Y-%m-%d")
 import_start_date = datetime.datetime.now() - datetime.timedelta(days=180)
 end_date = datetime.datetime.now() 
 delta = datetime.timedelta(days=1)
@@ -34,7 +33,7 @@ while (import_start_date <= end_date):
         if response_results['count'] != 0:
             print('Uploading %s data for: %s' %  (fuel, import_start_date.strftime("%Y-%m-%d")) )
             for result in response_results['results']:
-                epoch= datetime.datetime.timestamp(parser.parse(result['interval_start'])) 
+                epoch = datetime.datetime.timestamp(parser.parse(result['interval_start'])) 
                 value = result['consumption']
         
                 message = 'octopus.%s.consumption %s %d\n' % (fuel, value, epoch)
