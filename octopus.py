@@ -37,8 +37,12 @@ while (import_start_date <= end_date):
                 value = result['consumption']
         
                 message = 'octopus.%s.consumption %s %d\n' % (fuel, value, epoch)
-                sock.sendto(message.encode('utf-8'), (carbon_server, carbon_port))
+                try:
+                    sock.sendto(message.encode('utf-8'), (carbon_server, carbon_port))
+                except:
+                    # what to do if the send fails?
             
+                # Need to handle last successful gas or elec with earliest date so when we re-run we try to pickup the missing data.
                 last_successful_date = import_start_date.strftime("%Y-%m-%d")
         else:
             print('Skipping: %s as no data available' % import_start_date.strftime("%Y-%m-%d") )
