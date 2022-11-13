@@ -10,8 +10,9 @@ api_key = config['api']['api_key']
 carbon_server = config['carbon']['server']
 carbon_port = int(config['carbon']['port'])
 
-import_start_date = datetime.datetime.strptime(config['last_import']['date'], "%Y-%m-%d")
-end_date = datetime.datetime.now()
+# import_start_date = datetime.datetime.strptime(config['last_import']['date'], "%Y-%m-%d")
+import_start_date = datetime.datetime.now() - datetime.timedelta(days=180)
+end_date = datetime.datetime.now() 
 delta = datetime.timedelta(days=1)
 last_successful_date = 'never'
 
@@ -41,8 +42,7 @@ while (import_start_date <= end_date):
                     sock.sendto(message.encode('utf-8'), (carbon_server, carbon_port))
                 except:
                     # what to do if the send fails?
-            
-                # Need to handle last successful gas or elec with earliest date so when we re-run we try to pickup the missing data.
+                    print('Send to Carbon failed')
                 last_successful_date = import_start_date.strftime("%Y-%m-%d")
         else:
             print('Skipping: %s as no data available' % import_start_date.strftime("%Y-%m-%d") )
@@ -51,9 +51,4 @@ while (import_start_date <= end_date):
 
 # Close the connection to the carbon server
 sock.close()
-print('Imported data to: %s' % last_successful_date)
-
-# Write out last successful import to config file, to ensure we can incrementally load  next run.
-config["last_import"].update({"date":last_successful_date} )
-with open(config_file,"w") as file_object:
-    config.write(file_object)
+print('Imported data to at least: %s' % last_successful_date)
