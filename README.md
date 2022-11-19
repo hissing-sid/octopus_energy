@@ -7,8 +7,11 @@ I will start with a caveat; I am not a Python programmer so I am no expecting th
 My reference for the API has been the excellent guide published by Guy Lipman which can be found here: https://www.guylipman.com/octopus/api_guide.html
 
 
-
+## Architecture ##
 ![High Level Architecture](https://raw.githubusercontent.com/hissing-sid/octopus_energy/main/images/octopus_dashboard.png)
 
 Dashboarding is being done utilising Grafana reading the data out of the Graphite.
 ![Example Dashboard](https://raw.githubusercontent.com/hissing-sid/octopus_energy/main/images/grafana.png)
+
+## Running ##
+![Example Dashboard](https://raw.githubusercontent.com/hissing-sid/octopus_energy/main/images/example_run.png)
