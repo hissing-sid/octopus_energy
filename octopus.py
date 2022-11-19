@@ -12,15 +12,30 @@ def get_account_details(accountID, key):
             'electricity': {
                 'meter': property['properties'][0]['electricity_meter_points'][0]['mpan'],
                 'serial': property['properties'][0]['electricity_meter_points'][0]['meters'][0]['serial_number'],
-                'tarrifs': property['properties'][0]['electricity_meter_points'][0]['agreements']
+                'tariffs': property['properties'][0]['electricity_meter_points'][0]['agreements']
                 },
             'gas': {
                 'meter': property['properties'][0]['gas_meter_points'][0]['mprn'],
                 'serial': property['properties'][0]['gas_meter_points'][0]['meters'][0]['serial_number'],
-                'tarrifs': property['properties'][0]['gas_meter_points'][0]['agreements']
+                'tariffs': property['properties'][0]['gas_meter_points'][0]['agreements']
             }
     }
 
+def get_current_tariff(account_details, fuel, epoch):
+    tariff_code = 'None'
+    for tariff in account_details[fuel]['tariffs']:
+        print(tariff)
+
+        tariff_from = datetime.datetime.strptime(tariff['valid_from'], "%Y-%m-%dT%H:%M:00Z").timestamp()
+        try:
+            tariff_to = datetime.datetime.strptime(tariff['valid_to'], "%Y-%m-%dT%H:%M:00Z").timestamp()
+        except:
+            tariff_to = datetime.datetime.now().timestamp()
+
+        if  (epoch >= tariff_from ) and (epoch <= tariff_to):
+            tariff_code = tariff['tariff_code']
+
+    return tariff_code
 
 if __name__=="__main__":
 
@@ -41,6 +56,10 @@ if __name__=="__main__":
     end_date = datetime.datetime.now() 
     delta = datetime.timedelta(days=1)
     last_successful_date = 'never'
+
+    x = get_current_tariff(account_details, 'electricity', 1668086280)
+    print(x)
+    exit()
 
 
     # Open the connection to the carbon server
@@ -74,5 +93,4 @@ if __name__=="__main__":
 
     # Close the connection to the carbon server
     sock.close()
-   
     print('\nImported data to at least: %s \n' % last_successful_date)
