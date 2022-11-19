@@ -4,6 +4,8 @@ Small project to pull consumption data out of Octopus Energy's API utilissing a 
 
 I will start with a caveat; I am not a Python programmer so I am no expecting the code to be good, nice, clean, thorough but functional. If you feel like offering comments that can help improve things, then great! Even better commit your ideas to the repo.
 
+My reference for the API has been the excellent guide published by Guy Lipman which can be found here: https://www.guylipman.com/octopus/api_guide.html
+
 
 
 ![High Level Architecture](https://raw.githubusercontent.com/hissing-sid/octopus_energy/main/images/octopus_dashboard.png)
