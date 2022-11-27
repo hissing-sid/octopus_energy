@@ -26,6 +26,7 @@ def get_account_details(accountID, key):
 
 def retrieve_rates(api_key, accountID, account_details):
     
+    # Currently underway, not implemented yet
     print('Retrieving tariffs...')
     tariffs = []
     for fuel in {'gas','electricity'}:
